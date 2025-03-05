@@ -4,14 +4,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Url } from './domain/vo/url';
 import { CreateShortRequest } from './dto/create-short.request';
 import { UpdateShortRequest } from './dto/update-short.request';
 import { Short } from './entities/short.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { Owner } from './entities/owner.entity';
 import { ShortListResponse } from './dto/short-list.respose';
+import { Visit } from './entities/visit.entity';
 
 @Injectable()
 export class ShortsService {
@@ -21,6 +21,8 @@ export class ShortsService {
     @InjectRepository(Owner)
     private readonly ownerRepo: Repository<Owner>,
     private readonly entityManager: EntityManager,
+    @InjectRepository(Visit)
+    private readonly visitRepo: Repository<Visit>,
   ) {}
 
   async createShortNonTransactional(
@@ -162,8 +164,17 @@ export class ShortsService {
     });
   }
 
-  async findShort(slug: string): Promise<Url | null> {
-    const ret = await this.shortsRepo.findOne({ where: { slug } });
-    return ret ? new Url(ret.url) : null;
+  async findShort(slug: string): Promise<Short | null> {
+    return await this.shortsRepo.findOne({ where: { slug } });
+  }
+
+  async trackVisit(short: Short, ip: string) {
+    const visit = this.visitRepo.create({
+      short,
+      ip,
+      ownerId: short.ownerId,
+    });
+
+    await this.visitRepo.save(visit);
   }
 }

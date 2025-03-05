@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Ip,
   NotFoundException,
   Param,
   Redirect,
@@ -17,12 +18,15 @@ export class ShortsRedirectController {
   @ApiTemporaryRedirectResponse()
   @ApiParam({ name: 'slug', type: 'string' })
   @Redirect()
-  async redirect(@Param('slug') slug: string): Promise<Url> {
-    const url = await this.shortsService.findShort(slug);
+  async redirect(@Param('slug') slug: string, @Ip() ip: string): Promise<Url> {
+    const short = await this.shortsService.findShort(slug);
 
-    if (!url) {
+    if (!short) {
       throw new NotFoundException();
     }
-    return url;
+
+    this.shortsService.trackVisit(short, ip);
+
+    return new Url(short.url);
   }
 }
