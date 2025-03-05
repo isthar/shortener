@@ -11,7 +11,7 @@ import { ShortsService } from './shorts.service';
 import { UpdateShortRequest } from './dto/update-short.request';
 import { ApiBody, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CreateShortRequest } from './dto/create-short.request';
-import { CreateShortResponse } from './dto/create-short.response';
+import { ShortResponse } from './dto/short.response';
 
 import { ShortsResponse } from './dto/find-shorts.respose';
 
@@ -24,8 +24,8 @@ export class ShortsController {
   @ApiOperation({ summary: 'Create shorter url' })
   async createShort(
     @Body() createShortDto: CreateShortRequest,
-  ): Promise<CreateShortResponse> {
-    return CreateShortResponse.of(
+  ): Promise<ShortResponse> {
+    return ShortResponse.of(
       await this.shortsService.createShort(createShortDto),
     );
   }
@@ -64,10 +64,12 @@ export class ShortsController {
     example: '99fec7f7-daaf-43e2-9ae7-011d4033e239',
   })
   @ApiOperation({ summary: 'Update shorter url' })
-  updateShortcut(
+  async updateShortcut(
     @Param('id') id: string,
     @Body() updateShortDto: UpdateShortRequest,
   ) {
-    return this.shortsService.updateShort(id, updateShortDto);
+    return ShortResponse.of(
+      await this.shortsService.updateShort(id, updateShortDto),
+    );
   }
 }

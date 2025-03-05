@@ -1,14 +1,9 @@
 import { Short } from '../entities/short.entity';
 import { ApiData } from './data';
 
-export class CreateShortResponse {
-  static of(short: Short): CreateShortResponse {
-    return new CreateShortResponse(
-      short.id,
-      short.slug,
-      short.url,
-      short.ownerId,
-    );
+export class ShortResponse {
+  static of(short: Short): ShortResponse {
+    return new ShortResponse(short.id, short.slug, short.url, short.ownerId);
   }
 
   data: ApiData;
