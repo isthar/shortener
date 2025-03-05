@@ -64,7 +64,7 @@ export class ShortsController {
     example: '99fec7f7-daaf-43e2-9ae7-011d4033e239',
   })
   @ApiOperation({ summary: 'Update shorter url' })
-  async updateShortcut(
+  async updateShort(
     @Param('id') id: string,
     @Body() updateShortDto: UpdateShortRequest,
   ): Promise<ShortResponse> {

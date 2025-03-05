@@ -66,7 +66,7 @@ Extra:
       // mind that you need to add protocol to make url valid
 [x] - Display an error message if invalid
 [x] - Make it easy to copy the shortened URL to the clipboard 
-[ ] - Allow users to modify the slug of their URL
+[x] - Allow users to modify the slug of their URL
 [x] - Track visits to the shortened URL
       // in `visits` table. connect to db using datagrip or something similar client, use credentials from env.example
       // run query: 

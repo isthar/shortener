@@ -1,21 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient, ShortUrlResponse } from './apiClient';
 import './Shortener.css';
+import { FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 
+interface OtherLink {
+  id: string;
+  slug: string;
+  shortUrl: string;
+  longUrl: string;
+}
 
 const Shortener: React.FC = () => {
   const [url, setUrl] = useState('');
   const [shortUrl, setShortUrl] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [otherLinks, setOtherLinks] = useState<{ shortUrl: string; longUrl: string }[]>([]);
-
+  const [otherLinks, setOtherLinks] = useState<OtherLink[]>([]);
+  const [updateId, setUpdateId] = useState<string | null>(null);
+  const [updateSlug, setUpdateSlug] = useState('');
 
   const fetchOtherLinks = async (ownerId: string) => {
     try {
       const response = await apiClient.findShortsOfUser(ownerId);
 
       const links = response.data.map((item: any) => ({
+        id: item.id,
+        slug: item.slug,
         shortUrl: item.shortUrl, 
         longUrl: item.url
       }));
@@ -70,6 +80,34 @@ const Shortener: React.FC = () => {
     }
   };
 
+
+  const handleInlineUpdate = async (id: string) => {
+    if (!id) {
+      setErrorMessage('No short URL selected for update.');
+      return;
+    }
+    setSuccessMessage('');
+    setErrorMessage('');
+    try {
+      const storedOwnerId = localStorage.getItem('ownerId');
+      const updateData = {
+        slug: updateSlug,
+        ownerId: storedOwnerId,
+      };
+      const data: ShortUrlResponse = await apiClient.updateShort(id, updateData);
+      setSuccessMessage('Slug updated successfully.');
+      if (storedOwnerId) {
+        fetchOtherLinks(storedOwnerId);
+      }
+
+      setUpdateSlug('');
+      setUpdateId(null);
+    } catch (error: any) {
+      console.error(error);
+      setErrorMessage('Failed to update slug. ' + error.message);
+    }
+  };
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shortUrl);
   };
@@ -102,20 +140,77 @@ const Shortener: React.FC = () => {
         <table>
           <thead>
             <tr>
-              <th>Short URL</th>
+              
               <th>Long URL</th>
+              <th>Short URL</th>
             </tr>
           </thead>
           <tbody>
             {otherLinks.length > 0 ? (
               otherLinks.map((link, i) => (
                 <tr key={i}>
-                  <td>
-                    <a href={link.shortUrl} target="_blank" rel="noopener noreferrer">
-                      {link.shortUrl}
-                    </a>
-                  </td>
+                  
                   <td>{link.longUrl}</td>
+                  <td>
+                    
+                    {updateId === link.id ? (
+                      <>
+                        <input
+                          type="text"
+                          value={updateSlug}
+                          onChange={(e) => setUpdateSlug(e.target.value)}
+                          placeholder="New slug"
+                          className="input"
+                          style={{ marginLeft: '5px' }}
+                        />
+                        
+                        <button
+                          type="button"
+                          onClick={() => handleInlineUpdate(link.id)}
+                          className="button"
+                          style={{ marginRight: '5px' }}
+                          title="Save"
+                        >
+                           <FaSave size={16} />
+                        </button>
+                       
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUpdateId(null);
+                            setUpdateSlug('');
+                          }}
+                          className="button"
+                          title="Cancel"
+                        >
+                          <FaTimes size={16} />
+                        </button>
+                      </>
+                    ) : (
+                      
+                      <div>
+                      <a href={link.shortUrl} target="_blank" rel="noopener noreferrer">
+                        {link.shortUrl}
+                      </a>
+                      
+                      <button
+                        type="button"
+                        onClick={() => {
+                          console.log('Edit slug clicked for id:', link.id);
+                          setUpdateId(link.id);
+                          setUpdateSlug(link.slug);
+                        }}
+                        className="button"
+                        title="Edit Slug"
+                        style={{ marginLeft: '10px' }}
+                      >
+                        <FaEdit size={16} />
+                      </button>
+                      </div>
+                    )}
+                  
+
+                  </td>
                 </tr>
               ))
             ) : (
@@ -125,6 +220,8 @@ const Shortener: React.FC = () => {
             )}
           </tbody>
         </table>
+
+        
       </div>
     </div>
   );

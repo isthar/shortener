@@ -2,6 +2,7 @@ import { Short } from '../entities/short.entity';
 
 export class ShortListResponse {
   data: {
+    id: string;
     slug: string;
     url: string;
     ownerId: string;
@@ -24,6 +25,7 @@ export class ShortListResponse {
     },
   ) {
     this.data = indata.map((short: Short) => ({
+      id: short.id,
       slug: short.slug,
       url: short.url,
       ownerId: short.ownerId,

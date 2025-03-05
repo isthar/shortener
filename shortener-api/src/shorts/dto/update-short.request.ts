@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsSlug } from '../decorators/is-slug.decorator';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class UpdateShortRequest {
   @IsSlug()
   @IsNotEmpty()
+  @MaxLength(255)
   @ApiProperty({
     required: true,
     example: 'abc123',
