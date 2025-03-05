@@ -1,0 +1,95 @@
+/* Shortener.css */
+.container {
+  max-width: 600px;
+  margin: 1rem auto;
+  font-family: Arial, sans-serif;
+  padding: 0 1rem;
+}
+
+h1, h2 {
+  margin: 0.5rem 0;
+}
+
+.subtitle {
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.form {
+  display: flex;
+
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  width: 70%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  background: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.success {
+  text-align: center;
+  color: green;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.error {
+  text-align: center;
+  color: red;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.generated {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.copy {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.9rem;
+  border: 1px solid #007bff;
+  background: #fff;
+  color: #007bff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.other {
+  margin-top: 1rem;
+}
+
+.other table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.other th, .other td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.no-links {
+  text-align: center;
+  color: #777;
+  padding: 0.5rem;
+}

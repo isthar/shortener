@@ -1,0 +1,16 @@
+{
+  "name": "Shortener",
+  "version": "0.0.1",
+  "description": "",
+  "author": "tkrzywicki@gmail.com",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "docker:build": "docker-compose build",                   
+    "docker:up": "docker-compose up -d",                       
+    "docker:down": "docker-compose down",                      
+    "docker:db": "docker-compose up -d db",       
+    "docker:backend:start": "docker-compose up -d api",   
+    "docker:backend:restart": "docker-compose restart api" 
+  }
+}
