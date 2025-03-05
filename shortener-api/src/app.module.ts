@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Owner } from './shorts/entities/owner.entity';
 import { Short } from './shorts/entities/short.entity';
 import { Visit } from './shorts/entities/visit.entity';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -23,6 +24,14 @@ import { Visit } from './shorts/entities/visit.entity';
       database: process.env.DATABASE_NAME,
       entities: [Owner, Short, Visit],
       synchronize: true, // Only in development
+    }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
     }),
     ShortsModule,
     ServeStaticModule.forRoot({

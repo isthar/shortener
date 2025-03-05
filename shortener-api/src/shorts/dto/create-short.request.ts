@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsUrl } from 'class-validator';
 
 export class CreateShortRequest {
-  @IsUrl()
+  @IsUrl({ require_protocol: true })
   @ApiProperty({ required: true, example: 'https://www.example.com' })
   url: string;
 

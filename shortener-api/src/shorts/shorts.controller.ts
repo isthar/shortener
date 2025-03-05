@@ -13,7 +13,7 @@ import { ApiBody, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CreateShortRequest } from './dto/create-short.request';
 import { ShortResponse } from './dto/short.response';
 
-import { ShortsResponse } from './dto/find-shorts.respose';
+import { ShortListResponse } from './dto/short-list.respose';
 
 @Controller('/api')
 export class ShortsController {
@@ -45,7 +45,7 @@ export class ShortsController {
     @Param('userId') userId: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
-  ): Promise<ShortsResponse> {
+  ): Promise<ShortListResponse> {
     const currentPage = page ? Number(page) : 1;
     const perPage = limit ? Number(limit) : 10;
     return await this.shortsService.findShortsOfUser(
@@ -67,7 +67,7 @@ export class ShortsController {
   async updateShortcut(
     @Param('id') id: string,
     @Body() updateShortDto: UpdateShortRequest,
-  ) {
+  ): Promise<ShortResponse> {
     return ShortResponse.of(
       await this.shortsService.updateShort(id, updateShortDto),
     );

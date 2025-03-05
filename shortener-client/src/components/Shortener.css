@@ -17,7 +17,6 @@ h1, h2 {
 
 .form {
   display: flex;
-
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
@@ -38,6 +37,14 @@ h1, h2 {
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
+}
+
+button:active {
+  background-color: #ccc;
+}
+
+button:focus {
+  outline: 2px solid blue;
 }
 
 .success {

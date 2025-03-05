@@ -6,10 +6,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Owner } from './entities/owner.entity';
 import { Short } from './entities/short.entity';
 import { Visit } from './entities/visit.entity';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Owner, Short, Visit])],
   controllers: [ShortsController, ShortsRedirectController],
-  providers: [ShortsService],
+  providers: [
+    ShortsService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class ShortsModule {}

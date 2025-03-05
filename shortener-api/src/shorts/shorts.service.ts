@@ -11,7 +11,7 @@ import { Short } from './entities/short.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { Owner } from './entities/owner.entity';
-import { ShortsResponse } from './dto/find-shorts.respose';
+import { ShortListResponse } from './dto/short-list.respose';
 
 @Injectable()
 export class ShortsService {
@@ -114,7 +114,7 @@ export class ShortsService {
     ownerId: string,
     page = 1,
     limit = 10,
-  ): Promise<ShortsResponse> {
+  ): Promise<ShortListResponse> {
     const skip = (page - 1) * limit;
     const [data, totalItems] = await this.entityManager.findAndCount(Short, {
       where: { ownerId },
@@ -124,7 +124,7 @@ export class ShortsService {
     });
     const totalPages = Math.ceil(totalItems / limit);
 
-    return new ShortsResponse(data, {
+    return new ShortListResponse(data, {
       currentPage: page,
       perPage: limit,
       totalItems,

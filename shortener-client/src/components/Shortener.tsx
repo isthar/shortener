@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { apiClient, ShortUrlResponse } from './apiClient';
 import './Shortener.css';
 
@@ -10,21 +10,63 @@ const Shortener: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [otherLinks, setOtherLinks] = useState<{ shortUrl: string; longUrl: string }[]>([]);
 
+
+  const fetchOtherLinks = async (ownerId: string) => {
+    try {
+      const response = await apiClient.findShortsOfUser(ownerId);
+
+      const links = response.data.map((item: any) => ({
+        shortUrl: item.shortUrl, 
+        longUrl: item.url
+      }));
+      setOtherLinks(links);
+    } catch (error) {
+      console.error('Error fetching other links:', error);
+      setErrorMessage('Failed to fetch your links.');
+    }
+  };
+
+  useEffect(() => {
+    const storedOwnerId = localStorage.getItem('ownerId');
+    if (storedOwnerId) {
+      fetchOtherLinks(storedOwnerId);
+    }
+  }, []);
+
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSuccessMessage('');
     setErrorMessage('');
 
     try {
-      const data: ShortUrlResponse = await apiClient.createShort(url);
-      setShortUrl(data.shortUrl);
-      setSuccessMessage('URL shortened successfully!');
-      if (data.otherLinks) {
-        setOtherLinks(data.otherLinks);
+
+      const storedOwnerId = localStorage.getItem('ownerId');
+      const payload = {
+        url,
+          ...(storedOwnerId && { ownerId: storedOwnerId }),
+      };
+
+      const data: ShortUrlResponse = await apiClient.createShort(payload);
+
+
+      if (!storedOwnerId && data.data.attributes.ownerId) {
+        localStorage.setItem('ownerId', data.data.attributes.ownerId);
       }
+
+
+      setShortUrl(data.data.attributes.shortUrl);
+      setSuccessMessage(`Success, Here's your short URL:`);
+      
+      const ownerId = storedOwnerId || data.data.attributes.ownerId;
+      if (ownerId) {
+        fetchOtherLinks(ownerId);
+      }
+
+
     } catch (error) {
       console.error(error);
-      setErrorMessage('Failed to shorten URL.');
+      setErrorMessage('Failed to shorten URL. '+ error);
     }
   };
 
@@ -38,7 +80,7 @@ const Shortener: React.FC = () => {
       <p className="subtitle">Enter The URL to shorten</p>
       <form onSubmit={handleSubmit} className="form">
         <input 
-          type="url" 
+          type="text" 
           value={url} 
           onChange={(e) => setUrl(e.target.value)}
           placeholder="URL"

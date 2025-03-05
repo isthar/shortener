@@ -12,6 +12,7 @@ export class ShortResponse {
       slug,
       url,
       ownerId,
+      shortUrl: `${process.env.URL_HOSTNAME}/${slug}`,
     });
   }
 }
