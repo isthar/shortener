@@ -9,7 +9,7 @@ import {
 @Entity('shorts')
 export class Short {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ unique: true })
   slug: string;
@@ -18,7 +18,7 @@ export class Short {
   url: string;
 
   @Column()
-  ownerId: number;
+  ownerId: string;
 
   @CreateDateColumn()
   createdAt: Date;
