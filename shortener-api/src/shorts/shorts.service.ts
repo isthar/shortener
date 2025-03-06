@@ -8,7 +8,7 @@ import { CreateShortRequest } from './dto/create-short.request';
 import { UpdateShortRequest } from './dto/update-short.request';
 import { Short } from './entities/short.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { Owner } from './entities/owner.entity';
 import { ShortListResponse } from './dto/short-list.respose';
 import { Visit } from './entities/visit.entity';
