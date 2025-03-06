@@ -48,7 +48,8 @@ If you are using yarn or npm there is few handy command in package.json. Just ty
 
 ###
 
-Main application is located at `http://localhost:3000/'. API documentation is located at `http://localhost:3000/api`
+Main application is located at `http://localhost:3000/`.
+API documentation is located at `http://localhost:3000/api`.
 
 ## Tests
 
