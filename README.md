@@ -11,10 +11,12 @@ This application runs using Docker Compose. Please follow the instructions below
 
 1. **Install Docker and Docker Compose:**  
    Ensure Docker and Docker Compose are installed on your machine. You can verify the installation with:
+
    ```bash
    docker --version
    docker-compose --version
 
+   ```
 
 2. Copy the env.example file to a new file named .env. This file contains the environment variables required by the application.
 
@@ -25,15 +27,17 @@ cp env.example .env
 Edit the .env file to customize any configurations as needed.
 
 ## Running the Application
+
 To build the images and start the application, run:
 
 ```
 docker-compose up --build
 ```
+
 This command will build (or rebuild) the images and start all services defined in your docker-compose.yml file.
 
-
 ## Stopping the Application
+
 To stop the application, run:
 
 ```
@@ -46,32 +50,35 @@ If you are using yarn or npm there is few handy command in package.json. Just ty
 
 Main application is located at `http://localhost:3000/'. API documentation is located at `http://localhost:3000/api`
 
+## Tests
 
-
+```
+docker-compose run api yarn test
+```
 
 ## My Remarks
 
+### Requirements:
 
-Requirements:
-[x] - Build a web page with a form for entering a URL
-[x] - When the form is submitted, return a shortened version of the URL
-[x] - Save a record of the shortened URL to a database
-[x] - Ensure the slug of the URL (abc123 in the screenshot above) is unique
+- [x] Build a web page with a form for entering a URL
+- [x] When the form is submitted, return a shortened version of the URL
+- [x] Save a record of the shortened URL to a database
+- [x] Ensure the slug of the URL (abc123 in the screenshot above) is unique
 
+### Extra Credit:
 
-Extra:
-[x] - Add support for accounts so people can view the URLs they created
-      // sort of. I am storing user id in local storage so you can see your URLs once you re-enter 
-[x] - Validate the URL provided is an actual URL
-      // mind that you need to add protocol to make url valid
-[x] - Display an error message if invalid
-[x] - Make it easy to copy the shortened URL to the clipboard 
-[x] - Allow users to modify the slug of their URL
-[x] - Track visits to the shortened URL
-      // in `visits` table. connect to db using datagrip or something similar client, use credentials from env.example
-      // run query: 
-      ```
-      select ip, v."createdAt", url from visits v join shorts s on s.id = v."shortId" order by v."createdAt" desc;
-      ```
-[x] - Add rate-limiting to prevent bad-actors from spamming the service 
-[x] - Update API to follow a known spec (such as json:api)
+- [x] Add support for accounts so people can view the URLs they created
+  > Sort of. I am storing user id in local storage so you can see your URLs once you re-enter
+- [x] Validate the URL provided is an actual URL
+  > Mind that you need to add protocol to make url valid
+- [x] Display an error message if invalid
+- [x] Make it easy to copy the shortened URL to the clipboard
+- [x] Allow users to modify the slug of their URL
+- [x] Track visits to the shortened URL
+  > In `visits` table. connect to db using datagrip or something similar client, use credentials from env.example
+  > run query:
+  ```
+  select ip, v."createdAt", url from visits v join shorts s on s.id = v."shortId" order by v."createdAt" desc;
+  ```
+- [x] Add rate-limiting to prevent bad-actors from spamming the service
+- [x] Update API to follow a known spec (such as json:api)

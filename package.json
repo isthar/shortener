@@ -6,11 +6,12 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "docker:build": "docker-compose build",                   
-    "docker:up": "docker-compose up -d",                       
-    "docker:down": "docker-compose down",                      
-    "docker:db": "docker-compose up -d db",       
-    "docker:backend:start": "docker-compose up -d api",   
-    "docker:backend:restart": "docker-compose restart api" 
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:db": "docker-compose up -d db",
+    "docker:backend:start": "docker-compose up -d api",
+    "docker:backend:restart": "docker-compose restart api",
+    "test:api": "docker-compose run api yarn test"
   }
 }
