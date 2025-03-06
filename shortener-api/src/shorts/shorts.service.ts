@@ -168,13 +168,13 @@ export class ShortsService {
     return await this.shortsRepo.findOne({ where: { slug } });
   }
 
-  async trackVisit(short: Short, ip: string) {
+  async trackVisit(short: Short, ip: string): Promise<Visit> {
     const visit = this.visitRepo.create({
       short,
       ip,
       ownerId: short.ownerId,
     });
 
-    await this.visitRepo.save(visit);
+    return await this.visitRepo.save(visit);
   }
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsSlug } from '../decorators/is-slug.decorator';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class UpdateShortRequest {
   @IsSlug()
@@ -14,6 +14,7 @@ export class UpdateShortRequest {
 
   @IsString()
   @IsNotEmpty()
+  @IsUUID()
   @ApiProperty({
     required: true,
     example: '9cbbb6ba-c7a4-4016-a9c5-002b41d0fadc',

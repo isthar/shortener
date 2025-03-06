@@ -12,14 +12,17 @@ import {
   ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { create } from 'domain';
 
 describe('ShortsService', () => {
   let service: ShortsService;
   let shortsRepo: Repository<Short>;
   let ownerRepo: Repository<Owner>;
+  let visitRepo: Repository<Visit>;
 
   const createdShortIds: string[] = [];
   const createdOwnerIds: string[] = [];
+  const createdVisitIds: string[] = [];
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,18 +34,13 @@ describe('ShortsService', () => {
 
     shortsRepo = module.get<Repository<Short>>(getRepositoryToken(Short));
     ownerRepo = module.get<Repository<Owner>>(getRepositoryToken(Owner));
+    visitRepo = module.get<Repository<Visit>>(getRepositoryToken(Visit));
   });
 
-  afterEach(() => {
-    createdShortIds.forEach(async (id) => {
-      await shortsRepo.delete(id);
-    });
-    createdShortIds.length = 0;
-
-    createdOwnerIds.forEach(async (id) => {
-      await ownerRepo.delete(id);
-    });
-    createdOwnerIds.length = 0;
+  afterEach(async () => {
+    await deleteAndClear(createdVisitIds, visitRepo);
+    await deleteAndClear(createdShortIds, shortsRepo);
+    await deleteAndClear(createdOwnerIds, ownerRepo);
   });
 
   describe('createShort', () => {
@@ -150,4 +148,92 @@ describe('ShortsService', () => {
       ).rejects.toThrow(BadRequestException);
     });
   });
+
+  describe('findShortsOfUser', () => {
+    it('should return paginated list of shorts for a user', async () => {
+      const createShortRequest = { url: 'https://example.com' };
+      const result = await service.createShort(createShortRequest);
+      const ownerId = result.ownerId;
+
+      const createNextShortRequest = { ownerId, url: 'https://demo.com' };
+      const resultNext = await service.createShort(createNextShortRequest);
+
+      const response = await service.findShortsOfUser(ownerId, 1, 10);
+      const totalItems = 2;
+
+      expect(response.data).toHaveLength(totalItems);
+
+      const urls = response.data.map((short) => short.url);
+      expect(urls).toContain('https://demo.com');
+      expect(urls).toContain('https://example.com');
+
+      const ownerIds = response.data.map((short) => short.ownerId);
+      expect(ownerIds).toContain(ownerId);
+      expect(response.meta.totalItems).toEqual(totalItems);
+
+      createdShortIds.push(result.id);
+      createdShortIds.push(resultNext.id);
+
+      createdOwnerIds.push(result.ownerId);
+    });
+  });
+
+  describe('findShort', () => {
+    it('should return a short given a valid slug', async () => {
+      const createShortRequest = { url: 'https://example.com' };
+      const result = await service.createShort(createShortRequest);
+
+      const resultFind = await service.findShort(result.slug);
+      expect(resultFind.url).toEqual(createShortRequest.url);
+
+      createdShortIds.push(result.id);
+      createdOwnerIds.push(result.ownerId);
+    });
+
+    it('should return null if short not found', async () => {
+      const result = await service.findShort('not-found');
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('trackVisit', () => {
+    it('should save a new visit record for the short', async () => {
+      const url = 'https://www.some-very-long-domain.com';
+      const createShortRequest = { url };
+      const short = await service.createShort(createShortRequest);
+
+      const visit1 = await service.trackVisit(short as Short, '192.168.0.1');
+      const visit2 = await service.trackVisit(short as Short, '127.0.0.1');
+      const visit3 = await service.trackVisit(short as Short, '10.10.10.1');
+
+      createdShortIds.push(short.id);
+      createdOwnerIds.push(short.ownerId);
+      createdVisitIds.push(visit1.id);
+      createdVisitIds.push(visit2.id);
+      createdVisitIds.push(visit3.id);
+
+      const query = `
+        SELECT ip, v."createdAt", url 
+        FROM visits v 
+        JOIN shorts s ON s.id = v."shortId" 
+        ORDER BY v."createdAt" DESC
+      `;
+
+      const visits = await visitRepo.query(query);
+
+      expect(visits[0].ip).toEqual('10.10.10.1');
+      expect(visits[1].ip).toEqual('127.0.0.1');
+      expect(visits[2].ip).toEqual('192.168.0.1');
+      expect(visits[0].url).toEqual(url);
+      expect(visits[1].url).toEqual(url);
+      expect(visits[2].url).toEqual(url);
+
+      console.table(visits.slice(0, 3));
+    });
+  });
 });
+
+async function deleteAndClear(ids, repo) {
+  await Promise.all(ids.map((id) => repo.delete(id)));
+  ids.length = 0;
+}
